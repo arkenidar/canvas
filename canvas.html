@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<div><canvas id="canvas_element"></canvas></div>
+<div> <canvas id="canvas_element" ></canvas> </div>
 <style>
 canvas#canvas_element { border: 1px solid black; }
 </style>
@@ -42,6 +42,66 @@ function draw_pixel(x,y){
 }
 function draw_rectangle(xywh){
     canvas_context.fillRect(...xywh)
+}
+function canvas_clear(){
+    canvas_context.clearRect(0,0,canvas_element.width,canvas_element.height)
+}
+
+// input from mouse
+var pointer_position=[NaN,NaN]
+function canvas_element_onmousemove(event){
+    //console.log("on-mouse-move")
+    var canvas_element=event.target
+    var rectangle=canvas_element.getBoundingClientRect()
+    pointer_position[0]=event.clientX-rectangle.left
+    pointer_position[1]=event.clientY-rectangle.top
+}
+function canvas_element_onmouseleave(event){
+    pointer_position[0]=pointer_position[1]=NaN
+}
+
+// draw functions
+
+function draw_centered_square(position,color="red",size=4){
+    var previous_fill_style=canvas_context.fillStyle
+    canvas_context.fillStyle=color
+    draw_rectangle([...point_add(position,[-size/2,-size/2]),size,size])
+    canvas_context.fillStyle=previous_fill_style
+}
+
+function draw_pointer(){
+    //console.log("draw-pointer")
+    draw_centered_square(pointer_position) // draw pointer
+}
+
+// display loop
+
+function display(){
+    canvas_clear()
+
+    var rectangle=[10,10,60,100]
+    var radiuses=[30,30,10,10]
+
+    // color if pointer is inside
+    var corners = compute_corners(rectangle, radiuses)
+
+    var inside=boundary_check(rectangle, corners, pointer_position)
+    var color=inside?"grey":"black" // color if pointer inside
+    canvas_context.fillStyle=color
+
+    draw_rectangle_corners(rectangle,corners)
+
+    draw_pointer()
+}
+
+onload=function(){
+    //alert("on-load")
+
+    // mouse event-listeners
+    canvas_element.addEventListener("mousemove",canvas_element_onmousemove)
+    canvas_element.addEventListener("mouseleave",canvas_element_onmouseleave)
+    
+    setInterval(display,0) // loop for display loop
 }
 
 // compute
@@ -86,20 +146,26 @@ function rectangle_point_inner_vertex_center(point_vertex, radius, i){
     return point_returned
 }
 
-var rectangle=[10,10,60,100]
-///draw_rectangle(rectangle) // test
+function main_test1(rectangle,radiuses){
+    //var rectangle=[10,10,60,100]
+    ///draw_rectangle(rectangle) // test
 
-var radiuses=[30,30,10,10]
-///draw_corners(rectangle, radiuses) // test
+    //var radiuses=[30,30,10,10]
+    ///draw_corners(rectangle, radiuses) // test
 
-var corners = compute_corners(rectangle, radiuses)
-///draw_computed_corners(corners) // test
+    var corners = compute_corners(rectangle, radiuses)
+    ///draw_computed_corners(corners) // test
 
-// test (main test)
-var [x,y,w,h] = rectangle
-for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){
-    var inside = boundary_check(rectangle, corners, [px,py])
-    if(inside) draw_pixel(px, py)
+    // test (main test)
+    draw_rectangle_corners(rectangle,corners)
+}
+
+function draw_rectangle_corners(rectangle,corners){
+    var [x,y,w,h] = rectangle
+    for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){
+        var inside = boundary_check(rectangle, corners, [px,py])
+        if(inside) draw_pixel(px, py)
+    }
 }
 
 // the central part of this exercise
