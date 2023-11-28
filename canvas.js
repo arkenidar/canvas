@@ -59,6 +59,12 @@ function display(){
 
     draw_rectangle_corners(rectangle,corners)
 
+    // inner rectangle for borders
+    var thickness=1
+    canvas_context.fillStyle='white'
+    var rectangle_inner=[rectangle[0]+thickness,rectangle[1]+thickness,rectangle[2]-2*thickness,rectangle[3]-2*thickness]
+    draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses))
+
     draw_pointer()
 }
 
