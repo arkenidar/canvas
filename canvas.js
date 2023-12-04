@@ -44,6 +44,8 @@ function draw_pointer(){
 
 // display loop
 
+var transform=transform1 // initial
+
 function display(){
     canvas_clear()
 
@@ -53,17 +55,19 @@ function display(){
     // color if pointer is inside
     var corners = compute_corners(rectangle, radiuses)
 
-    var inside=boundary_check(rectangle, corners, pointer_position)
-    var color=inside?"grey":"black" // color if pointer inside
+    var point = transform.inverse(...pointer_position,rectangle)
+
+    var inside=boundary_check(rectangle, corners, point)
+    var color=inside?"red":"black" // color if pointer inside
     canvas_context.fillStyle=color
 
-    draw_rectangle_corners(rectangle,corners)
+    draw_rectangle_corners(rectangle,corners, transform)
 
     // inner rectangle for borders
-    var thickness=1
-    canvas_context.fillStyle='white'
+    var thickness=2
+    canvas_context.fillStyle="green"
     var rectangle_inner=[rectangle[0]+thickness,rectangle[1]+thickness,rectangle[2]-2*thickness,rectangle[3]-2*thickness]
-    draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses))
+    draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses),transform)
 
     draw_pointer()
 }
@@ -134,12 +138,82 @@ function main_test1(rectangle,radiuses){
     draw_rectangle_corners(rectangle,corners)
 }
 
-function draw_rectangle_corners(rectangle,corners){
+function draw_rectangle_corners(rectangle,corners,transform){
     var [x,y,w,h] = rectangle
     for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){
         var inside = boundary_check(rectangle, corners, [px,py])
-        if(inside) draw_pixel(px, py)
+        if(inside) draw_pixel(...transform(px,py,rectangle))
     }
+}
+
+// transforms
+
+transform1.inverse=transform1_inverse
+function transform1(ix,iy,rectangle){
+    return [ix+200,iy]
+}
+
+function transform1_inverse(ix,iy,rectangle){
+    return [ix-200,iy]
+}
+
+transform2.inverse=transform2_inverse
+function transform2(ix,iy,rectangle){
+
+    var [x,y,w,h] = rectangle
+
+    // pre-translate
+    var center = [(x+(x+w))/2,(y+(y+h))/2]
+
+    ix -= center[0]
+    iy -= center[1]
+
+    // rotation (transformation)
+    var pi=Math.PI, cos=Math.cos, sin=Math.sin
+    var angle=pi/3
+
+    var x_rotated = cos(angle)*ix - sin(angle)*iy
+    var y_rotated = sin(angle)*ix + cos(angle)*iy
+
+    ix = x_rotated ; iy = y_rotated
+
+    // translate back
+    ix += center[0]
+    iy += center[1]
+
+    // translate further
+    ix += 200
+
+    return [ix,iy]
+}
+
+function transform2_inverse(ix,iy,rectangle){
+
+    var [x,y,w,h] = rectangle
+
+    // INVERSE of "translate further"
+    ix -= 200
+
+    // pre-translate
+    var center = [(x+(x+w))/2,(y+(y+h))/2]
+
+    ix -= center[0]
+    iy -= center[1]
+
+    // rotation (transformation)
+    var pi=Math.PI, cos=Math.cos, sin=Math.sin
+    var angle=-pi/3 // INVERSE ROTATION
+
+    var x_rotated = cos(angle)*ix - sin(angle)*iy
+    var y_rotated = sin(angle)*ix + cos(angle)*iy
+
+    ix = x_rotated ; iy = y_rotated
+
+    // translate back
+    ix += center[0]
+    iy += center[1]
+
+    return [ix,iy]
 }
 
 // the central part of this exercise
