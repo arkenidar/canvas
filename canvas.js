@@ -42,10 +42,11 @@ function draw_pointer(){
     draw_centered_square(pointer_position) // draw pointer
 }
 
-// display loop
-
+// input from HTML GUI
 var transform=transform1 // initial
+var thickness=0 // initial
 
+// display loop
 function display(){
     canvas_clear()
 
@@ -64,7 +65,7 @@ function display(){
     draw_rectangle_corners(rectangle,corners, transform)
 
     // inner rectangle for borders
-    var thickness=parseInt(slider_thickness.value) // 2
+    ///var thickness=parseInt(slider_thickness.value) // 2
     canvas_context.fillStyle="green"
     var rectangle_inner=[rectangle[0]+thickness,rectangle[1]+thickness,rectangle[2]-2*thickness,rectangle[3]-2*thickness]
     var radiuses_inner=[radiuses[0]-thickness,radiuses[1]-thickness,radiuses[2]-thickness,radiuses[3]-thickness]

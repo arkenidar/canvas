@@ -15,7 +15,7 @@ canvas#canvas_element { border: 1px solid black; }
 <button onclick="transform=transform1">transform1</button>
 <button onclick="transform=transform2">transform2</button>
 
-<input id="slider_thickness" value="2" type="range" min="0" max="20" >
+<input id="slider_thickness" value="2" type="range" min="0" max="20" oninput="thickness=parseInt(this.value)" >
 
 <h1>canvas and computed geometric boundaries for Input/Output in display.</h1>
 
