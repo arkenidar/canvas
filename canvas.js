@@ -64,10 +64,11 @@ function display(){
     draw_rectangle_corners(rectangle,corners, transform)
 
     // inner rectangle for borders
-    var thickness=2
+    var thickness=parseInt(slider_thickness.value) // 2
     canvas_context.fillStyle="green"
     var rectangle_inner=[rectangle[0]+thickness,rectangle[1]+thickness,rectangle[2]-2*thickness,rectangle[3]-2*thickness]
-    draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses),transform)
+    var radiuses_inner=[radiuses[0]-thickness,radiuses[1]-thickness,radiuses[2]-thickness,radiuses[3]-thickness]
+    draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses_inner),transform)
 
     draw_pointer()
 }
