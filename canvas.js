@@ -242,11 +242,16 @@ function main_test1(rectangle,radiuses){
 
 function draw_rectangle_corners(rectangle,corners,transform, color){
     var [x,y,w,h] = rectangle
-    for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){
-        var inside = boundary_check(rectangle, corners, [px,py])
+    //for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){
+    for(var px = 0; px < width; px++) for(var py = 0; py < height; py++) {
+        
+        var [tx,ty] = transform.inverse(px,py,rectangle)
+        var point = [ Math.trunc(tx), Math.trunc(ty) ]
+        var inside = boundary_check(rectangle, corners, point) // point was [px,py]
 
-        var [tx,ty] = transform(px,py,rectangle)
-        var pixel_xywh = [ Math.trunc(tx), Math.trunc(ty), 1, 1 ]
+        ///var [tx,ty] = transform(px,py,rectangle)
+        ///var pixel_xywh = [ Math.trunc(tx), Math.trunc(ty), 1, 1 ]
+        var pixel_xywh = [px,py,1,1]
         if(inside) draw_rectangle_blend(pixel_xywh, color)
     }
 }
