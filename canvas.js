@@ -3,11 +3,92 @@
 canvas_element.width=canvas_element.parentElement.clientWidth
 canvas_element.height=canvas_element.parentElement.clientHeight
 
+// === begin from image.js ===
+// canvas
+var width = canvas_element.width /* pixel */
+var height = canvas_element.height /* pixel */
+
+{ // display buffer
+
+    // parallel typed-arrays
+    var size =/* parallel RGBA */ width * height
+    var typed_array_kind = Float32Array /* float array kind of typed arrays */
+    var r = new typed_array_kind(size) /* typed array */
+    var g = new typed_array_kind(size) /* typed array */
+    var b = new typed_array_kind(size) /* typed array */
+    var a = new typed_array_kind(size) /* typed array */
+
+    function color_get(x, y) {
+        var i = x + y * width; return [
+            r[i], g[i], b[i], a[i] /* to array */
+        ]
+    }
+    function color_set(x, y, color) {
+        var i = x + y * width;
+        [r[i], g[i], b[i], a[i]] = color /* from array */
+    }
+}
+
+// drawing APIs (using "canvas_context")
+
+var canvas_context = canvas_element.getContext('2d')
+function canvas_draw_pixel(x, y, color) {
+    canvas_draw_color(color)
+    canvas_context.fillRect(x, y, 1, 1)
+}
+
+function canvas_draw_color(color) {
+    var [r, g, b, a] = color
+    canvas_context.fillStyle = "rgba(" + percent(r) + "," + percent(g) + "," + percent(b) + "," + a + ")"
+    function percent(n) {
+        return (n * 100) + "%"
+    }
+}
+
+function canvas_clear() {
+    canvas_context.clearRect(0, 0, width, height)
+}
+
+// === buffer operations ===
+
+function canvas_draw_buffer() { // buffer to canvas
+    canvas_clear()
+    for (var x = 0; x < width; x++) for (var y = 0; y < height; y++) {
+        canvas_draw_pixel(x, y, color_get(x, y))
+    }
+}
+
+// draw into buffer (replacing) (...then "buffer to canvas")
+function draw_rectangle_replace(xywh, color) {
+    var [x, y, width, height] = xywh
+    for (var dx = x; dx < (x + width); dx++) for (var dy = y; dy < (y + height); dy++) {
+        color_set(dx, dy, color)
+    }
+}
+
+// draw into buffer (blending) (...then "buffer to canvas")
+function draw_rectangle_blend(xywh, color) {
+    var [x, y, width, height] = xywh
+    for (var dx = x; dx < (x + width); dx++) for (var dy = y; dy < (y + height); dy++) {
+        var under = color_get(dx, dy)
+        var alpha = color[3]
+        function blend(i) { // color|under
+            return alpha * color[i] + (1 - alpha) * under[i]
+        }
+        var result = [blend(0), blend(1), blend(2), under[3]]
+        color_set(dx, dy, result)
+    }
+}
+// === end from image.js ===
+
 // drawing APIs
+
+/*
 var canvas_context=canvas_element.getContext('2d')
-function draw_pixel(x,y){
+function draw_pixel(x,y, color){
     canvas_context.fillRect(x,y,1,1)
 }
+*/
 
 /*
 function draw_rectangle(xywh){
@@ -15,9 +96,11 @@ function draw_rectangle(xywh){
 }
 */
 
+/*
 function canvas_clear(){
     canvas_context.clearRect(0,0,canvas_element.width,canvas_element.height)
 }
+*/
 
 // input from mouse
 var pointer_position=[NaN,NaN]
@@ -43,20 +126,24 @@ function draw_centered_square(position,color="red",size=4){
 }
 */
 
-/*
-function draw_pointer(){
+function draw_pointer(position,size){
     //console.log("draw-pointer")
-    draw_centered_square(pointer_position) // draw pointer
+    ///draw_centered_square(pointer_position) // draw pointer
+
+    // draw centered square
+    draw_rectangle_replace([...point_add(position,[-size/2,-size/2]),size,size], [1, 0, 0, 1])
 }
-*/
 
 // input from HTML GUI
-var transform=transform1 // initial
-var thickness=0 // initial
+var transform=transform2 // initial
+var thickness=10 // initial
 
 // display loop
 function display(){
-    canvas_clear()
+    ///canvas_clear()
+
+    // clear surface (before draw contents)
+    draw_rectangle_replace([0, 0, width, height], [1, 1, 1, 1]) // semi-transparent (0.5) also
 
     var rectangle=[10,10,60,100]
     var radiuses=[30,30,10,10]
@@ -67,19 +154,22 @@ function display(){
     var point = transform.inverse(...pointer_position,rectangle)
 
     var inside=boundary_check(rectangle, corners, point)
-    var color=inside?"red":"black" // color if pointer inside
-    canvas_context.fillStyle=color
+    //var color=inside?"red":"black" // color if pointer inside
+    //canvas_context.fillStyle=color
 
-    draw_rectangle_corners(rectangle,corners, transform)
+    draw_rectangle_corners(rectangle,corners, transform, inside?[1,0,0,1]:[0,0,0,1])
 
     // inner rectangle for borders
     ///var thickness=parseInt(slider_thickness.value) // 2
-    canvas_context.fillStyle="green"
+    //canvas_context.fillStyle="green"
     var rectangle_inner=[rectangle[0]+thickness,rectangle[1]+thickness,rectangle[2]-2*thickness,rectangle[3]-2*thickness]
     var radiuses_inner=[radiuses[0]-thickness,radiuses[1]-thickness,radiuses[2]-thickness,radiuses[3]-thickness]
-    draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses_inner),transform)
+    draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses_inner),transform, [0,1,0,1])
 
-    //draw_pointer()
+    draw_pointer(pointer_position, 4)
+
+    // present contents (after draw contents)
+    canvas_draw_buffer()
 }
 
 onload=function(){
@@ -150,11 +240,14 @@ function main_test1(rectangle,radiuses){
 }
 */
 
-function draw_rectangle_corners(rectangle,corners,transform){
+function draw_rectangle_corners(rectangle,corners,transform, color){
     var [x,y,w,h] = rectangle
     for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){
         var inside = boundary_check(rectangle, corners, [px,py])
-        if(inside) draw_pixel(...transform(px,py,rectangle))
+
+        var [tx,ty] = transform(px,py,rectangle)
+        var pixel_xywh = [ Math.trunc(tx), Math.trunc(ty), 1, 1 ]
+        if(inside) draw_rectangle_blend(pixel_xywh, color)
     }
 }
 

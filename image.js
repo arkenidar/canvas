@@ -26,7 +26,8 @@ var height = canvas_element.height /* pixel */
 // drawing APIs (using "canvas_context")
 
 var canvas_context = canvas_element.getContext('2d')
-function canvas_draw_pixel(x, y) {
+function canvas_draw_pixel(x, y, color) {
+    canvas_draw_color(color)
     canvas_context.fillRect(x, y, 1, 1)
 }
 
@@ -47,8 +48,7 @@ function canvas_clear() {
 function canvas_draw_buffer() { // buffer to canvas
     canvas_clear()
     for (var x = 0; x < width; x++) for (var y = 0; y < height; y++) {
-        canvas_draw_color(color_get(x, y))
-        canvas_draw_pixel(x, y)
+        canvas_draw_pixel(x, y, color_get(x, y))
     }
 }
 
