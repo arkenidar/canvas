@@ -6,11 +6,11 @@ var height = canvas_element.height /* pixel */
 
     // parallel typed-arrays
     var size =/* parallel RGBA */ width * height
-    var type_array_kind = Float32Array /* float array kind of typed arrays */
-    var r = new type_array_kind(size) /* typed array */
-    var g = new type_array_kind(size) /* typed array */
-    var b = new type_array_kind(size) /* typed array */
-    var a = new type_array_kind(size) /* typed array */
+    var typed_array_kind = Float32Array /* float array kind of typed arrays */
+    var r = new typed_array_kind(size) /* typed array */
+    var g = new typed_array_kind(size) /* typed array */
+    var b = new typed_array_kind(size) /* typed array */
+    var a = new typed_array_kind(size) /* typed array */
 
     function color_get(x, y) {
         var i = x + y * width; return [
