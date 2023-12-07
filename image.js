@@ -42,7 +42,7 @@ function canvas_clear() {
     canvas_context.clearRect(0, 0, width, height)
 }
 
-// buffer operations
+// === buffer operations ===
 
 function canvas_draw_buffer() { // buffer to canvas
     canvas_clear()
@@ -52,11 +52,25 @@ function canvas_draw_buffer() { // buffer to canvas
     }
 }
 
-// draw into buffer (then "buffer to canvas")
-function draw_rectangle(xywh, color) {
+// draw into buffer (replacing) (...then "buffer to canvas")
+function draw_rectangle_replace(xywh, color) {
     var [x, y, width, height] = xywh
     for (var dx = x; dx < (x + width); dx++) for (var dy = y; dy < (y + height); dy++) {
         color_set(dx, dy, color)
+    }
+}
+
+// draw into buffer (blending) (...then "buffer to canvas")
+function draw_rectangle_blend(xywh, color) {
+    var [x, y, width, height] = xywh
+    for (var dx = x; dx < (x + width); dx++) for (var dy = y; dy < (y + height); dy++) {
+        var under = color_get(dx, dy)
+        var alpha = color[3]
+        function blend(i) { // color|under
+            return alpha * color[i] + (1 - alpha) * under[i]
+        }
+        var result = [blend(0), blend(1), blend(2), under[3]]
+        color_set(dx, dy, result)
     }
 }
 
@@ -64,27 +78,27 @@ function draw_rectangle(xywh, color) {
 function display() {
 
     // clear surface (before draw contents)
-    draw_rectangle([0, 0, width, height], [1, 1, 1, 0.5]) // semi-transparent
+    draw_rectangle_replace([0, 0, width, height], [1, 1, 1, 0.8]) // semi-transparent (0.5) also
 
     // draw contents (main part, middle)
     // (all opaque only work, current limitation, otherwise errors)
 
     { // rectangle 1
-        var color = [1, 0.5, 0, 1] // 0.5 also
+        var color = [1, 1, 0, 1] // 0.5 also
         var xywh = [50, 50, 100, 80]
-        draw_rectangle(xywh, color)
+        draw_rectangle_blend(xywh, color)
     }
 
     { // rectangle 2
-        var color = [0, 0.5, 0, 0.5] // 0.5 is semi-transparent (errors here, indeed)
+        var color = [0, 0, 1, 0.5] // 0.5 is semi-transparent (errors here, indeed)
         var xywh = [120, 60, 100, 20]
-        draw_rectangle(xywh, color)
+        draw_rectangle_blend(xywh, color)
     }
 
     { // rectangle 3
-        var color = [0, 0.5, 0, 1] // 1 is opaque
+        var color = [0, 0, 1, 1] // 1 is opaque
         var xywh = [120, 90, 100, 20]
-        draw_rectangle(xywh, color)
+        draw_rectangle_blend(xywh, color)
     }
 
     // present contents (after draw contents)
