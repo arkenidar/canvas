@@ -8,9 +8,13 @@ var canvas_context=canvas_element.getContext('2d')
 function draw_pixel(x,y){
     canvas_context.fillRect(x,y,1,1)
 }
+
+/*
 function draw_rectangle(xywh){
     canvas_context.fillRect(...xywh)
 }
+*/
+
 function canvas_clear(){
     canvas_context.clearRect(0,0,canvas_element.width,canvas_element.height)
 }
@@ -30,17 +34,21 @@ function canvas_element_onmouseleave(event){
 
 // draw functions
 
+/*
 function draw_centered_square(position,color="red",size=4){
     var previous_fill_style=canvas_context.fillStyle
     canvas_context.fillStyle=color
     draw_rectangle([...point_add(position,[-size/2,-size/2]),size,size])
     canvas_context.fillStyle=previous_fill_style
 }
+*/
 
+/*
 function draw_pointer(){
     //console.log("draw-pointer")
     draw_centered_square(pointer_position) // draw pointer
 }
+*/
 
 // input from HTML GUI
 var transform=transform1 // initial
@@ -71,7 +79,7 @@ function display(){
     var radiuses_inner=[radiuses[0]-thickness,radiuses[1]-thickness,radiuses[2]-thickness,radiuses[3]-thickness]
     draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses_inner),transform)
 
-    draw_pointer()
+    //draw_pointer()
 }
 
 onload=function(){
@@ -126,6 +134,7 @@ function rectangle_point_inner_vertex_center(point_vertex, radius, i){
     return point_returned
 }
 
+/*
 function main_test1(rectangle,radiuses){
     //var rectangle=[10,10,60,100]
     ///draw_rectangle(rectangle) // test
@@ -139,6 +148,7 @@ function main_test1(rectangle,radiuses){
     // test (main test)
     draw_rectangle_corners(rectangle,corners)
 }
+*/
 
 function draw_rectangle_corners(rectangle,corners,transform){
     var [x,y,w,h] = rectangle
@@ -236,6 +246,7 @@ function boundary_check(rectangle, corners, point){
 
 // corners
 
+/*
 function draw_corners(rectangle, radiuses){
     for(var i=0; i<4; i++){
         var radius = radiuses[i]
@@ -250,6 +261,7 @@ function draw_corners(rectangle, radiuses){
         draw_rectangle([...point_add(point_center,[-2,-2]),4,4])
     }
 }
+*/
 
 function compute_corners(rectangle, radiuses){
     var corners = []
@@ -264,6 +276,7 @@ function compute_corners(rectangle, radiuses){
     return corners
 }
 
+/*
 function draw_computed_corners(corners){
     for(var i=0; i<4; i++){
         var corner = corners[i]
@@ -275,6 +288,7 @@ function draw_computed_corners(corners){
         draw_rectangle([...point_add(corner.center,[-2,-2]),4,4])
     }
 }
+*/
 
 // mathematic utilities
 
