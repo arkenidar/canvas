@@ -58,11 +58,21 @@ function canvas_draw_buffer() { // buffer to canvas
     }
 }
 
+function color_to_set(x, y, color) {
+    // case: base, simple
+    if (typeof color[0] == "number") return color
+    // case: repeated color pattern
+    var pattern_width = color[0].length
+    var pattern_height = color.length
+    var color_returned = color[y % pattern_height][x % pattern_width]
+    return color_returned
+}
+
 // draw into buffer (replacing) (...then "buffer to canvas")
 function draw_rectangle_replace(xywh, color) {
     var [x, y, width, height] = xywh
     for (var dx = x; dx < (x + width); dx++) for (var dy = y; dy < (y + height); dy++) {
-        color_set(dx, dy, color)
+        color_set(dx, dy, color_to_set(dx,dy,color))
     }
 }
 
@@ -76,7 +86,7 @@ function draw_rectangle_blend(xywh, color) {
             return alpha * color[i] + (1 - alpha) * under[i]
         }
         var result = [blend(0), blend(1), blend(2), under[3]]
-        color_set(dx, dy, result)
+        color_set(dx, dy, color_to_set(dx,dy,result))
     }
 }
 // === end from image.js ===
@@ -143,13 +153,15 @@ var thickness = 10 // initial setting
 
 // variables for assets
 var pattern1 = assets_pattern1()
-function assets_pattern1(){
-    var a = [0,0,0,1] // color: black
-    var b = [0,0,1,1] // color: blue
+function assets_pattern1() {
+    var a = [0, 0, 0, 1] // color: black
+    var b = [0, 0, 1, 1] // color: blue
     var pattern = [
-        [a,b,b],
-        [b,a,b],
-        [b,b,a]
+        [a, b, b],
+        [b, a, b],
+        [b, b, a],
+        [b, b, a],
+        [b, a, b]
     ]
     return pattern
 }
@@ -166,7 +178,7 @@ function display() {
     ///canvas_clear()
 
     canvas_draw_color([1, 1, 1, 0])
-    draw_rectangle_replace([0, 0, width, height], [1, 1, 1, 0]) // semi-transparent (0.5) also
+    draw_rectangle_replace([0, 0, width, height], pattern1) // semi-transparent (0.5) also
 
     // === begin to draw contents ===
 
@@ -183,7 +195,7 @@ function display() {
 
     // color accordingly!
     ///var color=inside?"red":"black" // color if pointer inside
-    var color = inside ?/*red*/[1, 0, 0, 1] :/*black*/[0, 0, 0, 1]
+    var color = inside ?/*red*/[1, 0, 0, 1] :/*black*/[0, 0, 0, 0.6]
 
     ///canvas_context.fillStyle=color
     // color is passed to draw_rectangle_corners that sets it
@@ -197,7 +209,7 @@ function display() {
 
     ///canvas_context.fillStyle="green"
     // color_inner is passed to draw_rectangle_corners that sets it
-    var color_inner = [0, 1, 0, 0] // green
+    var color_inner = [0, 1, 0, 0.2] // green
 
     // inner geometry according to border thickness
     var rectangle_inner = [rectangle[0] + thickness, rectangle[1] + thickness, rectangle[2] - 2 * thickness, rectangle[3] - 2 * thickness]
@@ -299,7 +311,7 @@ function draw_rectangle_corners(rectangle,corners,transform, color){
         ///var [tx,ty] = transform(px,py,rectangle)
         ///var pixel_xywh = [ Math.trunc(tx), Math.trunc(ty), 1, 1 ]
         var pixel_xywh = [px,py,1,1]
-        if(inside) draw_rectangle_replace(pixel_xywh, color)
+        if(inside) draw_rectangle_blend(pixel_xywh, color)
     }
 }
 
