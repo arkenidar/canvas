@@ -134,44 +134,77 @@ function draw_pointer(position,size){
     draw_rectangle_replace([...point_add(position,[-size/2,-size/2]),size,size], [1, 0, 0, 1])
 }
 
-// input from HTML GUI
-var transform=transform2 // initial
-var thickness=10 // initial
+// === display() section ===
 
-// display loop
-function display(){
+// === global variables: ===
+// variables for input from HTML GUI
+var transform = transform2 // initial setting
+var thickness = 10 // initial setting
+
+// === display loop === (called by setInterval function)
+function display() {
+
+    // global variables:
+    // transform
+    // thickness
+
+    // === clear surface (before draw contents) ===
+
     ///canvas_clear()
 
-    // clear surface (before draw contents)
     canvas_draw_color([1, 1, 1, 0])
     draw_rectangle_replace([0, 0, width, height], [1, 1, 1, 0]) // semi-transparent (0.5) also
 
-    var rectangle=[10,10,60,100]
-    var radiuses=[30,30,10,10]
+    // === begin to draw contents ===
 
-    // color if pointer is inside
+    var rectangle = [10, 10, 60, 100]
+    var radiuses = [30, 30, 10, 10]
+
     var corners = compute_corners(rectangle, radiuses)
 
-    var point = transform.inverse(...pointer_position,rectangle)
+    // color if pointer is inside
 
-    var inside=boundary_check(rectangle, corners, point)
-    //var color=inside?"red":"black" // color if pointer inside
-    //canvas_context.fillStyle=color
+    // is pointer inside shape?
+    var point = transform.inverse(...pointer_position, rectangle)
+    var inside = boundary_check(rectangle, corners, point)
 
-    draw_rectangle_corners(rectangle,corners, transform, inside?[1,0,0,1]:[0,0,0,1])
+    // color accordingly!
+    ///var color=inside?"red":"black" // color if pointer inside
+    var color = inside ?/*red*/[1, 0, 0, 1] :/*black*/[0, 0, 0, 1]
 
-    // inner rectangle for borders
+    ///canvas_context.fillStyle=color
+    // color is passed to draw_rectangle_corners that sets it
+
+    draw_rectangle_corners(rectangle, corners, transform, color)
+
+    // === inner rectangle for borders ===
+
     ///var thickness=parseInt(slider_thickness.value) // 2
-    //canvas_context.fillStyle="green"
-    var rectangle_inner=[rectangle[0]+thickness,rectangle[1]+thickness,rectangle[2]-2*thickness,rectangle[3]-2*thickness]
-    var radiuses_inner=[radiuses[0]-thickness,radiuses[1]-thickness,radiuses[2]-thickness,radiuses[3]-thickness]
-    draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses_inner),transform, [0,1,0,0])
+    // thickness is a global variable
 
+    ///canvas_context.fillStyle="green"
+    // color_inner is passed to draw_rectangle_corners that sets it
+    var color_inner = [0, 1, 0, 0] // green
+
+    // inner geometry according to border thickness
+    var rectangle_inner = [rectangle[0] + thickness, rectangle[1] + thickness, rectangle[2] - 2 * thickness, rectangle[3] - 2 * thickness]
+    var radiuses_inner = [radiuses[0] - thickness, radiuses[1] - thickness, radiuses[2] - thickness, radiuses[3] - thickness]
+    // corners are computed accordingly
+    var corners_inner = compute_corners(rectangle_inner, radiuses_inner)
+    draw_rectangle_corners(rectangle_inner, corners_inner, /* same transform */transform, color_inner)
+
+    // === last layer ===
+
+    // pointer for mouse and touch-screens inputs
     draw_pointer(pointer_position, 4)
 
-    // present contents (after draw contents)
+    // === end of draw contents ===
+
+    // === present contents (after draw contents) ===
+
     canvas_draw_buffer()
-}
+
+} // function display()
 
 onload=function(){
     //alert("on-load")
