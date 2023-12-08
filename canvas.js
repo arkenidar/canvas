@@ -141,6 +141,19 @@ function draw_pointer(position,size){
 var transform = transform2 // initial setting
 var thickness = 10 // initial setting
 
+// variables for assets
+var pattern1 = assets_pattern1()
+function assets_pattern1(){
+    var a = [0,0,0,1] // color: black
+    var b = [0,0,1,1] // color: blue
+    var pattern = [
+        [a,b,b],
+        [b,a,b],
+        [b,b,a]
+    ]
+    return pattern
+}
+
 // === display loop === (called by setInterval function)
 function display() {
 
