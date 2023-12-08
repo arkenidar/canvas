@@ -195,12 +195,12 @@ function display() {
 
     // color accordingly!
     ///var color=inside?"red":"black" // color if pointer inside
-    var color = inside ?/*red*/[1, 0, 0, 1] :/*black*/[0, 0, 0, 0.6]
+    var color = inside ?/*red*/[1, 0.5, 0, 1] :/*black*/[0, 0, 0, 0.6]
 
     ///canvas_context.fillStyle=color
     // color is passed to draw_rectangle_corners that sets it
 
-    draw_rectangle_corners(rectangle, corners, transform, color)
+    ///////////draw_rectangle_corners(rectangle, corners, transform, color)
 
     // === inner rectangle for borders ===
 
@@ -216,7 +216,8 @@ function display() {
     var radiuses_inner = [radiuses[0] - thickness, radiuses[1] - thickness, radiuses[2] - thickness, radiuses[3] - thickness]
     // corners are computed accordingly
     var corners_inner = compute_corners(rectangle_inner, radiuses_inner)
-    draw_rectangle_corners(rectangle_inner, corners_inner, /* same transform */transform, color_inner)
+    /////////draw_rectangle_corners(rectangle_inner, corners_inner, /* same transform */transform, color_inner)
+    draw_rectangle_corners_inner(rectangle, corners, rectangle_inner, corners_inner, /* same transform */transform, color, color_inner)
 
     // === last layer ===
 
@@ -299,6 +300,7 @@ function main_test1(rectangle,radiuses){
 }
 */
 
+/*
 function draw_rectangle_corners(rectangle,corners,transform, color){
     var [x,y,w,h] = rectangle
     //for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){
@@ -312,6 +314,27 @@ function draw_rectangle_corners(rectangle,corners,transform, color){
         ///var pixel_xywh = [ Math.trunc(tx), Math.trunc(ty), 1, 1 ]
         var pixel_xywh = [px,py,1,1]
         if(inside) draw_rectangle_blend(pixel_xywh, color)
+    }
+}
+*/
+
+function draw_rectangle_corners_inner(rectangle1,corners1,rectangle2,corners2, /*same*/ transform, color1, color2){
+    ///var [x,y,w,h] = rectangle1
+    ///for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){
+    for(var px = 0; px < width; px++) for(var py = 0; py < height; py++) {
+        
+        var [tx,ty] = transform.inverse(px,py,rectangle1)
+        var point = [ Math.trunc(tx), Math.trunc(ty) ]
+        var inside = boundary_check(rectangle1, corners1, point) // point was [px,py]
+
+        var inside_inner = boundary_check(rectangle2, corners2, point)
+
+        ///var [tx,ty] = transform(px,py,rectangle)
+        ///var pixel_xywh = [ Math.trunc(tx), Math.trunc(ty), 1, 1 ]
+        var pixel_xywh = [px,py,1,1]
+        if(inside_inner) draw_rectangle_blend(pixel_xywh, color2)
+        else
+        if(inside) draw_rectangle_blend(pixel_xywh, color1)
     }
 }
 
