@@ -143,7 +143,8 @@ function display(){
     ///canvas_clear()
 
     // clear surface (before draw contents)
-    draw_rectangle_replace([0, 0, width, height], [1, 1, 1, 1]) // semi-transparent (0.5) also
+    canvas_draw_color([1, 1, 1, 0])
+    draw_rectangle_replace([0, 0, width, height], [1, 1, 1, 0]) // semi-transparent (0.5) also
 
     var rectangle=[10,10,60,100]
     var radiuses=[30,30,10,10]
@@ -164,7 +165,7 @@ function display(){
     //canvas_context.fillStyle="green"
     var rectangle_inner=[rectangle[0]+thickness,rectangle[1]+thickness,rectangle[2]-2*thickness,rectangle[3]-2*thickness]
     var radiuses_inner=[radiuses[0]-thickness,radiuses[1]-thickness,radiuses[2]-thickness,radiuses[3]-thickness]
-    draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses_inner),transform, [0,1,0,1])
+    draw_rectangle_corners(rectangle_inner,compute_corners(rectangle_inner, radiuses_inner),transform, [0,1,0,0])
 
     draw_pointer(pointer_position, 4)
 
@@ -252,7 +253,7 @@ function draw_rectangle_corners(rectangle,corners,transform, color){
         ///var [tx,ty] = transform(px,py,rectangle)
         ///var pixel_xywh = [ Math.trunc(tx), Math.trunc(ty), 1, 1 ]
         var pixel_xywh = [px,py,1,1]
-        if(inside) draw_rectangle_blend(pixel_xywh, color)
+        if(inside) draw_rectangle_replace(pixel_xywh, color)
     }
 }
 
