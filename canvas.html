@@ -1,42 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title> canvas and computed geometric boundaries for display Input/Output </title>
 </head>
+
 <body>
 
-<div> <canvas id="canvas_element" ></canvas> </div>
-<style>
-canvas#canvas_element { border: 1px solid black; background-image: url('background.jpeg'); }
-</style>
-<script src="canvas.js"></script>
-<button onclick="transform=transform1">transform1</button>
-<button onclick="transform=transform2">transform2</button>
+    <div> <canvas id="canvas_element"></canvas> </div>
+    <style>
+        canvas#canvas_element {
+            border: 1px solid black;
+            background-image: url('background.jpeg');
+        }
+    </style>
+    <script src="canvas.js"></script>
+    <button onclick="transform=transform1">transform1</button>
+    <button onclick="transform=transform2">transform2</button>
 
-<input id="slider_thickness" value="2" type="range" min="0" max="20" oninput="thickness=parseInt(this.value)" >
+    <input id="slider_thickness" value="2" type="range" min="0" max="20" oninput="thickness=parseInt(this.value)">
 
-<h1>canvas and computed geometric boundaries for Input/Output in display.</h1>
+    <h1>canvas and computed geometric boundaries for Input/Output in display.</h1>
 
-<div> <a href="canvas.js">view script source, JavaScript part of this.</a> </div>
+    <div> <a href="canvas.js">view script source, JavaScript part of this.</a> </div>
 
-<hr>
+    <hr>
 
-<div class="text">
-<div>learning again, repetition to improve.</div>
-<div>past works of mine: <a>https://arkenidar.com/web/canvas/</a>. </div>
-<div>orientation toward:</div>
-<div>this in HTML5... -> <a>https://replit.com/@dariocangialosi/circles</a>. </div>
-<div>novelty: a boolean function that answers the question of whether a coordinate is inside a "rounded-corners" boundary. <br>
-this should extend-and-include the drawing functionality (produce visual *output* for user) <br>
-to "touch in boundary" check also (user *input* checks).</div>
-<a>https://www.facebook.com/dario.cangialosi.arkenidar/posts/pfbid02fL1jiy9WDr7EjAYJyMaAuXWeKGkt8qyMKikLX1JLohz39akU7KNLJH9wHyDjHbEql</a>
-</div>
-<script>
-var links = document.querySelectorAll(".text a")
-for(var link of links) link.href=link.innerText
-</script>
+    <div class="text">
+        <div>learning again, repetition to improve.</div>
+        <div>past works of mine: <a>https://arkenidar.com/web/canvas/</a>. </div>
+        <div>orientation toward:</div>
+        <div>this in HTML5... -> <a>https://replit.com/@dariocangialosi/circles</a>. </div>
+        <div>novelty: a boolean function that answers the question of whether a coordinate is inside a "rounded-corners"
+            boundary. <br>
+            this should extend-and-include the drawing functionality (produce visual *output* for user) <br>
+            to "touch in boundary" check also (user *input* checks).</div>
+        <a>https://www.facebook.com/dario.cangialosi.arkenidar/posts/pfbid02fL1jiy9WDr7EjAYJyMaAuXWeKGkt8qyMKikLX1JLohz39akU7KNLJH9wHyDjHbEql</a>
+    </div>
+    <script>
+        var links = document.querySelectorAll(".text a")
+        for (var link of links) link.href = link.innerText
+    </script>
 
 </body>
+
 </html>

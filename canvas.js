@@ -1,7 +1,7 @@
 
 // sizing
-canvas_element.width=canvas_element.parentElement.clientWidth
-canvas_element.height=canvas_element.parentElement.clientHeight
+canvas_element.width = canvas_element.parentElement.clientWidth
+canvas_element.height = canvas_element.parentElement.clientHeight
 
 // === begin from image.js ===
 // canvas
@@ -72,7 +72,7 @@ function color_to_set(x, y, color) {
 function draw_rectangle_replace(xywh, color) {
     var [x, y, width, height] = xywh
     for (var dx = x; dx < (x + width); dx++) for (var dy = y; dy < (y + height); dy++) {
-        color_set(dx, dy, color_to_set(dx,dy,color))
+        color_set(dx, dy, color_to_set(dx, dy, color))
     }
 }
 
@@ -86,7 +86,7 @@ function draw_rectangle_blend(xywh, color) {
             return alpha * color[i] + (1 - alpha) * under[i]
         }
         var result = [blend(0), blend(1), blend(2), under[3]]
-        color_set(dx, dy, color_to_set(dx,dy,result))
+        color_set(dx, dy, color_to_set(dx, dy, result))
     }
 }
 // === end from image.js ===
@@ -113,16 +113,16 @@ function canvas_clear(){
 */
 
 // input from mouse
-var pointer_position=[NaN,NaN]
-function canvas_element_onmousemove(event){
+var pointer_position = [NaN, NaN]
+function canvas_element_onmousemove(event) {
     //console.log("on-mouse-move")
-    var canvas_element=event.target
-    var rectangle=canvas_element.getBoundingClientRect()
-    pointer_position[0]=event.clientX-rectangle.left
-    pointer_position[1]=event.clientY-rectangle.top
+    var canvas_element = event.target
+    var rectangle = canvas_element.getBoundingClientRect()
+    pointer_position[0] = event.clientX - rectangle.left
+    pointer_position[1] = event.clientY - rectangle.top
 }
-function canvas_element_onmouseleave(event){
-    pointer_position[0]=pointer_position[1]=NaN
+function canvas_element_onmouseleave(event) {
+    pointer_position[0] = pointer_position[1] = NaN
 }
 
 // draw functions
@@ -136,12 +136,12 @@ function draw_centered_square(position,color="red",size=4){
 }
 */
 
-function draw_pointer(position,size){
+function draw_pointer(position, size) {
     //console.log("draw-pointer")
     ///draw_centered_square(pointer_position) // draw pointer
 
     // draw centered square
-    draw_rectangle_replace([...point_add(position,[-size/2,-size/2]),size,size], [1, 0, 0, 1])
+    draw_rectangle_replace([...point_add(position, [-size / 2, -size / 2]), size, size], [1, 0, 0, 1])
 }
 
 // === display() section ===
@@ -232,52 +232,52 @@ function display() {
 
 } // function display()
 
-onload=function(){
+onload = function () {
     //alert("on-load")
 
     // mouse event-listeners
-    canvas_element.addEventListener("mousemove",canvas_element_onmousemove)
-    canvas_element.addEventListener("mouseleave",canvas_element_onmouseleave)
-    
-    setInterval(display,0) // loop for display loop
+    canvas_element.addEventListener("mousemove", canvas_element_onmousemove)
+    canvas_element.addEventListener("mouseleave", canvas_element_onmouseleave)
+
+    setInterval(display, 0) // loop for display loop
 }
 
 // compute
 
-function point_add(p1,p2){
-    return [p1[0]+p2[0], p1[1]+p2[1]]
+function point_add(p1, p2) {
+    return [p1[0] + p2[0], p1[1] + p2[1]]
 }
 
-var booleans=[
-    [0,0],
-    [1,0],
-    [0,1],
-    [1,1]
+var booleans = [
+    [0, 0],
+    [1, 0],
+    [0, 1],
+    [1, 1]
 ]
 
-function rectangle_point_vertex(xywh,i){
-    var [x,y,w,h] = xywh
+function rectangle_point_vertex(xywh, i) {
+    var [x, y, w, h] = xywh
     var boolean = booleans[i]
-    return [x+boolean[0]*w,y+boolean[1]*h]
+    return [x + boolean[0] * w, y + boolean[1] * h]
 }
 
-function rectangle_point_inner_vertex_corner_box(point_vertex, radius, i){
+function rectangle_point_inner_vertex_corner_box(point_vertex, radius, i) {
     var boolean_pairs = [
-        [0,0],
-        [-radius,0],
-        [0,-radius],
-        [-radius,-radius]
+        [0, 0],
+        [-radius, 0],
+        [0, -radius],
+        [-radius, -radius]
     ]
     var translate = boolean_pairs[i]
     var point_returned = point_add(point_vertex, translate)
     return point_returned
 }
-function rectangle_point_inner_vertex_center(point_vertex, radius, i){
+function rectangle_point_inner_vertex_center(point_vertex, radius, i) {
     var boolean_pairs = [
-        [radius,radius],
-        [-radius,radius],
-        [radius,-radius],
-        [-radius,-radius]
+        [radius, radius],
+        [-radius, radius],
+        [radius, -radius],
+        [-radius, -radius]
     ]
     var translate = boolean_pairs[i]
     var point_returned = point_add(point_vertex, translate)
@@ -318,56 +318,56 @@ function draw_rectangle_corners(rectangle,corners,transform, color){
 }
 */
 
-function draw_rectangle_corners_inner(rectangle1,corners1,rectangle2,corners2, /*same*/ transform, color1, color2){
+function draw_rectangle_corners_inner(rectangle1, corners1, rectangle2, corners2, /*same*/ transform, color1, color2) {
     ///var [x,y,w,h] = rectangle1
     ///for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){
-    for(var px = 0; px < width; px++) for(var py = 0; py < height; py++) {
-        
-        var [tx,ty] = transform.inverse(px,py,rectangle1)
-        var point = [ Math.trunc(tx), Math.trunc(ty) ]
+    for (var px = 0; px < width; px++) for (var py = 0; py < height; py++) {
+
+        var [tx, ty] = transform.inverse(px, py, rectangle1)
+        var point = [Math.trunc(tx), Math.trunc(ty)]
         var inside = boundary_check(rectangle1, corners1, point) // point was [px,py]
 
         var inside_inner = boundary_check(rectangle2, corners2, point)
 
         ///var [tx,ty] = transform(px,py,rectangle)
         ///var pixel_xywh = [ Math.trunc(tx), Math.trunc(ty), 1, 1 ]
-        var pixel_xywh = [px,py,1,1]
-        if(inside_inner) draw_rectangle_blend(pixel_xywh, color2)
+        var pixel_xywh = [px, py, 1, 1]
+        if (inside_inner) draw_rectangle_blend(pixel_xywh, color2)
         else
-        if(inside) draw_rectangle_blend(pixel_xywh, color1)
+            if (inside) draw_rectangle_blend(pixel_xywh, color1)
     }
 }
 
 // transforms
 
-transform1.inverse=transform1_inverse
-function transform1(ix,iy,rectangle){
-    return [ix+200,iy]
+transform1.inverse = transform1_inverse
+function transform1(ix, iy, rectangle) {
+    return [ix + 200, iy]
 }
 
-function transform1_inverse(ix,iy,rectangle){
-    return [ix-200,iy]
+function transform1_inverse(ix, iy, rectangle) {
+    return [ix - 200, iy]
 }
 
-transform2.inverse=transform2_inverse
-function transform2(ix,iy,rectangle){
+transform2.inverse = transform2_inverse
+function transform2(ix, iy, rectangle) {
 
-    var [x,y,w,h] = rectangle
+    var [x, y, w, h] = rectangle
 
     // pre-translate
-    var center = [(x+(x+w))/2,(y+(y+h))/2]
+    var center = [(x + (x + w)) / 2, (y + (y + h)) / 2]
 
     ix -= center[0]
     iy -= center[1]
 
     // rotation (transformation)
-    var pi=Math.PI, cos=Math.cos, sin=Math.sin
-    var angle=pi/3
+    var pi = Math.PI, cos = Math.cos, sin = Math.sin
+    var angle = pi / 3
 
-    var x_rotated = cos(angle)*ix - sin(angle)*iy
-    var y_rotated = sin(angle)*ix + cos(angle)*iy
+    var x_rotated = cos(angle) * ix - sin(angle) * iy
+    var y_rotated = sin(angle) * ix + cos(angle) * iy
 
-    ix = x_rotated ; iy = y_rotated
+    ix = x_rotated; iy = y_rotated
 
     // translate back
     ix += center[0]
@@ -376,48 +376,48 @@ function transform2(ix,iy,rectangle){
     // translate further
     ix += 200
 
-    return [ix,iy]
+    return [ix, iy]
 }
 
-function transform2_inverse(ix,iy,rectangle){
+function transform2_inverse(ix, iy, rectangle) {
 
-    var [x,y,w,h] = rectangle
+    var [x, y, w, h] = rectangle
 
     // INVERSE of "translate further"
     ix -= 200
 
     // pre-translate
-    var center = [(x+(x+w))/2,(y+(y+h))/2]
+    var center = [(x + (x + w)) / 2, (y + (y + h)) / 2]
 
     ix -= center[0]
     iy -= center[1]
 
     // rotation (transformation)
-    var pi=Math.PI, cos=Math.cos, sin=Math.sin
-    var angle=-pi/3 // INVERSE ROTATION
+    var pi = Math.PI, cos = Math.cos, sin = Math.sin
+    var angle = -pi / 3 // INVERSE ROTATION
 
-    var x_rotated = cos(angle)*ix - sin(angle)*iy
-    var y_rotated = sin(angle)*ix + cos(angle)*iy
+    var x_rotated = cos(angle) * ix - sin(angle) * iy
+    var y_rotated = sin(angle) * ix + cos(angle) * iy
 
-    ix = x_rotated ; iy = y_rotated
+    ix = x_rotated; iy = y_rotated
 
     // translate back
     ix += center[0]
     iy += center[1]
 
-    return [ix,iy]
+    return [ix, iy]
 }
 
 // the central part of this exercise
 
-function boundary_check(rectangle, corners, point){
-    if(false==point_inside_rectangle(point, rectangle)) return false // outside
-    for(var i=0; i<4; i++){
-        var corner=corners[i]
+function boundary_check(rectangle, corners, point) {
+    if (false == point_inside_rectangle(point, rectangle)) return false // outside
+    for (var i = 0; i < 4; i++) {
+        var corner = corners[i]
         var outside
         outside = point_inside_rectangle(point, corner.box)
-            && (distance(corner.center,point) > corner.radius)
-        if(outside){
+            && (distance(corner.center, point) > corner.radius)
+        if (outside) {
             return false // outside
         }
     }
@@ -443,14 +443,14 @@ function draw_corners(rectangle, radiuses){
 }
 */
 
-function compute_corners(rectangle, radiuses){
+function compute_corners(rectangle, radiuses) {
     var corners = []
-    for(var i=0; i<4; i++){
+    for (var i = 0; i < 4; i++) {
         var radius = radiuses[i]
-        var point_vertex = rectangle_point_vertex(rectangle,i)
+        var point_vertex = rectangle_point_vertex(rectangle, i)
         var point_corner_box = rectangle_point_inner_vertex_corner_box(point_vertex, radius, i)
         var point_corner_center = rectangle_point_inner_vertex_center(point_vertex, radius, i)
-        var corner = {center: point_corner_center, box: [...point_corner_box,radius,radius], radius }
+        var corner = { center: point_corner_center, box: [...point_corner_box, radius, radius], radius }
         corners.push(corner)
     }
     return corners
@@ -472,15 +472,15 @@ function draw_computed_corners(corners){
 
 // mathematic utilities
 
-function point_inside_rectangle(point, rectangle){
-  return (
-    point[0]>=rectangle[0] &&
-    point[0]<=(rectangle[0]+rectangle[2]) &&
-    point[1]>=rectangle[1] &&
-    point[1]<=(rectangle[1]+rectangle[3])
-  )
+function point_inside_rectangle(point, rectangle) {
+    return (
+        point[0] >= rectangle[0] &&
+        point[0] <= (rectangle[0] + rectangle[2]) &&
+        point[1] >= rectangle[1] &&
+        point[1] <= (rectangle[1] + rectangle[3])
+    )
 }
 
-function distance(p1,p2){
-    return Math.sqrt( (p1[0]-p2[0])**2 + (p1[1]-p2[1])**2 )
+function distance(p1, p2) {
+    return Math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 }
