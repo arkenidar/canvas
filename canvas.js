@@ -340,6 +340,15 @@ function draw_rectangle_corners_inner(rectangle1, corners1, rectangle2, corners2
 
 // transforms
 
+transform0.inverse = transform0_inverse
+function transform0(ix, iy, rectangle) {
+    return [ix, iy]
+}
+
+function transform0_inverse(ix, iy, rectangle) {
+    return [ix, iy]
+}
+
 transform1.inverse = transform1_inverse
 function transform1(ix, iy, rectangle) {
     return [ix + 200, iy]
