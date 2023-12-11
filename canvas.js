@@ -239,7 +239,7 @@ onload = function () {
     canvas_element.addEventListener("mousemove", canvas_element_onmousemove)
     canvas_element.addEventListener("mouseleave", canvas_element_onmouseleave)
 
-    setInterval(display, 0) // loop for display loop
+    setInterval(display, 0 /* milli-seconds */) // loop for display loop
 }
 
 // compute
@@ -319,9 +319,14 @@ function draw_rectangle_corners(rectangle,corners,transform, color){
 */
 
 function draw_rectangle_corners_inner(rectangle1, corners1, rectangle2, corners2, /*same*/ transform, color1, color2) {
+
     ///var [x,y,w,h] = rectangle1
-    ///for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){
-    for (var px = 0; px < width; px++) for (var py = 0; py < height; py++) {
+    ///for(var px = x; px < x+w; px++)for(var py = y; py < y+h; py++){ // iterate the rectangle named "rectangle1" (no transform considered yet, e.g. not transformed)
+
+    ///for (var px = 0; px < width; px++) for (var py = 0; py < height; py++) { // iterate the whole canvas (tranform considered but not optimal, not optimized yet, a prototype, transitional)
+
+    var [x1, y1, x2, y2] = rectangle_transformed_bounding_box(rectangle1, transform)
+    for (var px = x1; px <= x2; px++) for (var py = y1; py <= y2; py++) { // iterate the bounding box of transformed rectangle named "rectangle1" (first optimization attempt of "transformed rectangle" situation)
 
         var [tx, ty] = transform.inverse(px, py, rectangle1)
         var point = [Math.trunc(tx), Math.trunc(ty)]
@@ -336,6 +341,29 @@ function draw_rectangle_corners_inner(rectangle1, corners1, rectangle2, corners2
         else
             if (inside) draw_rectangle_blend(pixel_xywh, color1)
     }
+}
+
+function rectangle_transformed_bounding_box(rectangle, transform) {
+    var [x, y, w, h] = rectangle
+    function transform2(x, y) {
+        return point_truncate(...transform(x, y, rectangle))
+    }
+    var first_point = transform2(x, y) // 1st point
+    var bounding_box = [...first_point, ...first_point]
+    function add_point_to_bounding_box(x, y) {
+        bounding_box[0] = Math.min(bounding_box[0], x)
+        bounding_box[1] = Math.min(bounding_box[1], y)
+        bounding_box[2] = Math.max(bounding_box[2], x)
+        bounding_box[3] = Math.max(bounding_box[3], y)
+    }
+    add_point_to_bounding_box(...transform2(x + w, y)) // 2nd point
+    add_point_to_bounding_box(...transform2(x, y + h)) // 3rd point
+    add_point_to_bounding_box(...transform2(x + w, y + h)) // 4th point
+    return bounding_box
+}
+
+function point_truncate(x, y) {
+    return [Math.trunc(x), Math.trunc(y)]
 }
 
 // transforms
