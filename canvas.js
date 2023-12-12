@@ -1,3 +1,5 @@
+// debug mode
+var debug_mode = () => debug_mode_checkbox.checked
 
 // sizing
 canvas_element.width = canvas_element.parentElement.clientWidth
@@ -11,12 +13,12 @@ var height = canvas_element.height /* pixel */
 { // display buffer
 
     // parallel typed-arrays
-    var size =/* parallel RGBA */ width * height
+    var array_size =/* parallel RGBA */ width * height
     var typed_array_kind = Float32Array /* float array kind of typed arrays */
-    var r = new typed_array_kind(size) /* typed array */
-    var g = new typed_array_kind(size) /* typed array */
-    var b = new typed_array_kind(size) /* typed array */
-    var a = new typed_array_kind(size) /* typed array */
+    var r = new typed_array_kind(array_size) /* typed array */
+    var g = new typed_array_kind(array_size) /* typed array */
+    var b = new typed_array_kind(array_size) /* typed array */
+    var a = new typed_array_kind(array_size) /* typed array */
 
     function color_get(x, y) {
         var i = x + y * width; return [
@@ -111,6 +113,27 @@ function canvas_clear(){
     canvas_context.clearRect(0,0,canvas_element.width,canvas_element.height)
 }
 */
+
+function draw_square_gizmo(position, size, color_rgb) {
+    if (debug_mode() == false) return
+    var square_size = size
+    //alert(square_size)
+    var square_color = [...color_rgb, 0.8]
+    ///draw_rectangle_replace([point[0], point[1], size, size], [0, 1, 0, 1])
+    square_xywh = [...point_add(position, [-Math.trunc(square_size / 2), -Math.trunc(square_size / 2)]), square_size, square_size]
+    draw_rectangle_blend(square_xywh, square_color)
+}
+
+function color_rgb(color_name) {
+    var table = {}
+    table.black = [0, 0, 0]
+    table.white = [1, 1, 1]
+    table.red = [1, 0, 0]
+    table.green = [0, 1, 0]
+    table.blue = [0, 0, 1]
+    table.yellow = [1, 1, 0]
+    return table[color_name]
+}
 
 // input from mouse
 var pointer_position = [NaN, NaN]
@@ -326,6 +349,7 @@ function draw_rectangle_corners_inner(rectangle1, corners1, rectangle2, corners2
     ///for (var px = 0; px < width; px++) for (var py = 0; py < height; py++) { // iterate the whole canvas (tranform considered but not optimal, not optimized yet, a prototype, transitional)
 
     var [x1, y1, x2, y2] = rectangle_transformed_bounding_box(rectangle1, transform)
+    draw_square_gizmo([x1, y1], 5, color_rgb("red")); draw_square_gizmo([x2, y2], 5, color_rgb("red"))
     for (var px = x1; px <= x2; px++) for (var py = y1; py <= y2; py++) { // iterate the bounding box of transformed rectangle named "rectangle1" (first optimization attempt of "transformed rectangle" situation)
 
         var [tx, ty] = transform.inverse(px, py, rectangle1)
@@ -345,8 +369,12 @@ function draw_rectangle_corners_inner(rectangle1, corners1, rectangle2, corners2
 
 function rectangle_transformed_bounding_box(rectangle, transform) {
     var [x, y, w, h] = rectangle
+    ///draw_square_gizmo([x, y], 10)
     function transform2(x, y) {
-        return point_truncate(...transform(x, y, rectangle))
+        var point_transformed = point_truncate(...transform(x, y, rectangle))
+        draw_square_gizmo([x, y], 5, color_rgb("black"))
+        draw_square_gizmo(point_transformed, 15, color_rgb("white"))
+        return point_transformed
     }
     var first_point = transform2(x, y) // 1st point
     var bounding_box = [...first_point, ...first_point]

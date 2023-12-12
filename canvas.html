@@ -16,12 +16,16 @@
             background-image: url('background.jpeg');
         }
     </style>
-    <script src="canvas.js"></script>
+
     <button onclick="transform=transform0">transform0</button>
     <button onclick="transform=transform1">transform1</button>
     <button onclick="transform=transform2">transform2</button>
 
     <input id="slider_thickness" value="2" type="range" min="0" max="20" oninput="thickness=parseInt(this.value)">
+
+    <label><input type="checkbox" id="debug_mode_checkbox">debug mode</label>
+
+    <script src="canvas.js"></script>
 
     <h1>canvas and computed geometric boundaries for Input/Output in display.</h1>
 
